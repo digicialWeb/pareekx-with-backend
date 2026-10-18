@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && myProfile().role == 'ADMIN'
+        && myProfile().active == true;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAdmin()
+        || (signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.role == 'DEALER'
+          && request.resource.data.email == request.auth.token.email);
+      allow update: if isAdmin()
+        || (signedIn() && request.auth.uid == userId
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.active == resource.data.active);
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && myProfile().active == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (signedIn()
+        && (resource.data.dealerUid == request.auth.uid
+          || resource.data.salespersonUid == request.auth.uid));
+      allow create: if signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && myProfile().active == true
+        && (request.resource.data.dealerUid == request.auth.uid
+          || request.resource.data.salespersonUid == request.auth.uid || isAdmin());
+      allow update: if isAdmin() || (signedIn()
+        && resource.data.dealerUid == request.auth.uid
+        && request.resource.data.dealerUid == resource.data.dealerUid
+        && request.resource.data.status == resource.data.status);
+      allow delete: if isAdmin();
+    }
+
+    match /{collection}/{documentId} {
+      allow read, write: if isAdmin() && collection in [
+        'dealers', 'salespersons', 'shades', 'transports', 'settings',
+        'whatsappSettings', 'whatsappTemplates', 'coupons'
+      ];
+    }
+  }
+}
