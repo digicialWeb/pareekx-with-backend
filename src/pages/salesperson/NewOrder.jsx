@@ -84,6 +84,8 @@ export default function NewOrder() {
 
   const [dealers, setDealers] = useState([]);
   const [dealerId, setDealerId] = useState("");
+  const [dealerSearch, setDealerSearch] = useState("");
+  const [dealerDropdownOpen, setDealerDropdownOpen] = useState(false);
 
   const [productId, setProductId] = useState("");
 
@@ -108,6 +110,16 @@ export default function NewOrder() {
     () => dealers.find((dealer) => String(dealer.id) === String(dealerId)),
     [dealers, dealerId],
   );
+
+  const filteredDealers = useMemo(() => {
+    const search = dealerSearch.trim().toLowerCase();
+    if (!search) return dealers;
+
+    return dealers.filter((dealer) =>
+      [dealer.name, dealer.phone, dealer.city]
+        .some((value) => String(value || "").toLowerCase().includes(search)),
+    );
+  }, [dealers, dealerSearch]);
 
   const selectedProduct = useMemo(
     () => PRODUCTS.find((product) => String(product.id) === String(productId)),
@@ -390,34 +402,70 @@ export default function NewOrder() {
                 </div>
                                {" "}
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                    Select Dealer \\\*                {" "}
+                  Select Existing Dealer *
                 </label>
-                               {" "}
                 <div className="relative">
-                                   {" "}
-                  <select
-                    required
-                    value={dealerId}
-                    onChange={(e) => setDealerId(e.target.value)}
-                    className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-[#B5220E] focus:bg-white focus:ring-4 focus:ring-[#B5220E]/10"
+                  <button
+                    type="button"
+                    onClick={() => setDealerDropdownOpen((open) => !open)}
+                    className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-left text-sm font-medium text-slate-700 outline-none transition focus:border-[#B5220E] focus:bg-white focus:ring-4 focus:ring-[#B5220E]/10"
+                    aria-expanded={dealerDropdownOpen}
                   >
-                                        <option value="">Select dealer</option> 
-                                     {" "}
-                    {dealers.map((dealer) => (
-                      <option key={dealer.id} value={dealer.id}>
-                                                {dealer.name} — {dealer.city}   
-                                         {" "}
-                      </option>
-                    ))}
-                                     {" "}
-                  </select>
-                                   {" "}
-                  <ChevronDown
-                    size={17}
-                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                                 {" "}
-                </div>{" "}
+                    <span className={selectedDealer ? "text-slate-700" : "text-slate-400"}>
+                      {selectedDealer
+                        ? `${selectedDealer.name} — ${selectedDealer.city || ""}`
+                        : "Select existing dealer"}
+                    </span>
+                    <ChevronDown
+                      size={17}
+                      className={`shrink-0 text-slate-400 transition-transform ${dealerDropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {dealerDropdownOpen && (
+                    <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+                      <div className="border-b border-slate-100 p-3">
+                        <input
+                          type="text"
+                          value={dealerSearch}
+                          onChange={(e) => setDealerSearch(e.target.value)}
+                          placeholder="Search by name, phone or city..."
+                          autoFocus
+                          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-[#B5220E] focus:ring-2 focus:ring-[#B5220E]/10"
+                        />
+                      </div>
+                      <div className="max-h-60 overflow-y-auto p-1">
+                        {filteredDealers.length > 0 ? (
+                          filteredDealers.map((dealer) => (
+                            <button
+                              key={dealer.id}
+                              type="button"
+                              onClick={() => {
+                                setDealerId(String(dealer.id));
+                                setDealerDropdownOpen(false);
+                                setDealerSearch("");
+                              }}
+                              className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition hover:bg-slate-50 ${
+                                String(dealer.id) === String(dealerId)
+                                  ? "bg-[#B5220E]/5 font-semibold text-[#B5220E]"
+                                  : "text-slate-700"
+                              }`}
+                            >
+                              <span className="block">{dealer.name}</span>
+                              <span className="mt-0.5 block text-xs text-slate-400">
+                                {[dealer.phone, dealer.city].filter(Boolean).join(" • ")}
+                              </span>
+                            </button>
+                          ))
+                        ) : (
+                          <p className="px-3 py-4 text-center text-sm text-slate-400">
+                            No dealers found.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {dealers.length === 0 && (
                   <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
                     No dealers are assigned to this salesperson yet.
