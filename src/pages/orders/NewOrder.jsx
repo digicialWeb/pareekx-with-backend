@@ -949,13 +949,13 @@ export default function NewOrder({ role = "salesperson" }) {
                     {" "}
                     <div className="relative mb-3">
                       {" "}
-                      <input
+                      {/* <input
                         type="text"
                         value={dealerSearch}
                         onChange={(e) => setDealerSearch(e.target.value)}
                         placeholder="Search dealer by name, phone or city..."
                         className={inputClass}
-                      />{" "}
+                      />{" "} */}
                     </div>{" "}
                     <div className="relative">
                       {" "}
