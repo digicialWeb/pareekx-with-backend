@@ -208,10 +208,10 @@ export default function NewOrder({ role = "salesperson" }) {
   const loggedInDealer =
     isDealer && storedUser && typeof storedUser === "object"
       ? {
-          ...fallbackDealer,
-          ...storedUser,
-          name: storedUser.name || storedUser.dealerName || fallbackDealer.name,
-        }
+        ...fallbackDealer,
+        ...storedUser,
+        name: storedUser.name || storedUser.dealerName || fallbackDealer.name,
+      }
       : fallbackDealer;
 
   const [dealerList, setDealerList] = useState([]);
@@ -219,6 +219,7 @@ export default function NewOrder({ role = "salesperson" }) {
   const [selectedDealerId, setSelectedDealerId] = useState("");
 
   const [dealerSearch, setDealerSearch] = useState("");
+  const [dealerDropdownOpen, setDealerDropdownOpen] = useState(false);
 
   const [showNewDealer, setShowNewDealer] = useState(false);
 
@@ -308,7 +309,8 @@ export default function NewOrder({ role = "salesperson" }) {
 
   const handleDealerSelect = (id) => {
     setSelectedDealerId(id);
-
+    setDealerSearch("");
+    setDealerDropdownOpen(false);
     setShowNewDealer(false);
   };
 
@@ -339,22 +341,22 @@ export default function NewOrder({ role = "salesperson" }) {
       prev.map((product) =>
         product.id === productId
           ? {
-              ...product,
+            ...product,
 
-              [field]: value,
+            [field]: value,
 
-              ...(field === "productId"
-                ? {
-                    shades: [
-                      {
-                        ...createShade(),
+            ...(field === "productId"
+              ? {
+                shades: [
+                  {
+                    ...createShade(),
 
-                        shade: "",
-                      },
-                    ],
-                  }
-                : {}),
-            }
+                    shade: "",
+                  },
+                ],
+              }
+              : {}),
+          }
           : product,
       ),
     );
@@ -369,10 +371,10 @@ export default function NewOrder({ role = "salesperson" }) {
       prev.map((product) =>
         product.id === productId
           ? {
-              ...product,
+            ...product,
 
-              shades: [...product.shades, createShade()],
-            }
+            shades: [...product.shades, createShade()],
+          }
           : product,
       ),
     );
@@ -407,22 +409,22 @@ export default function NewOrder({ role = "salesperson" }) {
       prev.map((product) =>
         product.id === productId
           ? {
-              ...product,
+            ...product,
 
-              shades: product.shades.map((shade) =>
-                shade.id === shadeId
-                  ? {
-                      ...shade,
+            shades: product.shades.map((shade) =>
+              shade.id === shadeId
+                ? {
+                  ...shade,
 
-                      [field]: value,
+                  [field]: value,
 
-                      ...(field === "shade" && value !== "other"
-                        ? { customShade: "" }
-                        : {}),
-                    }
-                  : shade,
-              ),
-            }
+                  ...(field === "shade" && value !== "other"
+                    ? { customShade: "" }
+                    : {}),
+                }
+                : shade,
+            ),
+          }
           : product,
       ),
     );
@@ -437,18 +439,18 @@ export default function NewOrder({ role = "salesperson" }) {
       prev.map((product) =>
         product.id === productId
           ? {
-              ...product,
+            ...product,
 
-              shades: product.shades.map((shade) =>
-                shade.id === shadeId
-                  ? {
-                      ...shade,
+            shades: product.shades.map((shade) =>
+              shade.id === shadeId
+                ? {
+                  ...shade,
 
-                      packs: [...shade.packs, createPack()],
-                    }
-                  : shade,
-              ),
-            }
+                  packs: [...shade.packs, createPack()],
+                }
+                : shade,
+            ),
+          }
           : product,
       ),
     );
@@ -459,20 +461,20 @@ export default function NewOrder({ role = "salesperson" }) {
       prev.map((product) =>
         product.id === productId
           ? {
-              ...product,
+            ...product,
 
-              shades: product.shades.map((shade) => {
-                if (shade.id !== shadeId) return shade;
+            shades: product.shades.map((shade) => {
+              if (shade.id !== shadeId) return shade;
 
-                if (shade.packs.length === 1) return shade;
+              if (shade.packs.length === 1) return shade;
 
-                return {
-                  ...shade,
+              return {
+                ...shade,
 
-                  packs: shade.packs.filter((pack) => pack.id !== packId),
-                };
-              }),
-            }
+                packs: shade.packs.filter((pack) => pack.id !== packId),
+              };
+            }),
+          }
           : product,
       ),
     );
@@ -493,33 +495,33 @@ export default function NewOrder({ role = "salesperson" }) {
       prev.map((product) =>
         product.id === productId
           ? {
-              ...product,
+            ...product,
 
-              shades: product.shades.map((shade) =>
-                shade.id === shadeId
-                  ? {
-                      ...shade,
+            shades: product.shades.map((shade) =>
+              shade.id === shadeId
+                ? {
+                  ...shade,
 
-                      packs: shade.packs.map((pack) =>
-                        pack.id === packId
-                          ? {
-                              ...pack,
+                  packs: shade.packs.map((pack) =>
+                    pack.id === packId
+                      ? {
+                        ...pack,
 
-                              [field]:
-                                field === "quantity"
-                                  ? Math.max(
-                                      0,
+                        [field]:
+                          field === "quantity"
+                            ? Math.max(
+                              0,
 
-                                      Number(value),
-                                    )
-                                  : value,
-                            }
-                          : pack,
-                      ),
-                    }
-                  : shade,
-              ),
-            }
+                              Number(value),
+                            )
+                            : value,
+                      }
+                      : pack,
+                  ),
+                }
+                : shade,
+            ),
+          }
           : product,
       ),
     );
@@ -642,111 +644,111 @@ export default function NewOrder({ role = "salesperson" }) {
     setSubmitError("");
     try {
 
-    const generatedOrderId = `PRK-${Date.now()
+      const generatedOrderId = `PRK-${Date.now()
 
-      .toString()
+        .toString()
 
-      .slice(-6)}`;
+        .slice(-6)}`;
 
-    let finalDealer;
+      let finalDealer;
 
-    if (isDealer) {
-      finalDealer = {
-        ...loggedInDealer,
-        isNew: false,
-      };
-    } else if (showNewDealer) {
-      const existingDealers = getDealers();
-      const newDealerId =
-        existingDealers.reduce(
-          (maxId, dealer) => Math.max(maxId, Number(dealer.id) || 0),
-          0,
-        ) + 1;
+      if (isDealer) {
+        finalDealer = {
+          ...loggedInDealer,
+          isNew: false,
+        };
+      } else if (showNewDealer) {
+        const existingDealers = getDealers();
+        const newDealerId =
+          existingDealers.reduce(
+            (maxId, dealer) => Math.max(maxId, Number(dealer.id) || 0),
+            0,
+          ) + 1;
 
-      finalDealer = {
-        ...newDealer,
-        id: newDealerId,
-        salespersonId: Number(salespersonId),
-        active: true,
-        totalOrders: 0,
-        totalQuantity: 0,
-        lastOrder: new Date().toISOString().slice(0, 10),
-        isNew: true,
-      };
+        finalDealer = {
+          ...newDealer,
+          id: newDealerId,
+          salespersonId: Number(salespersonId),
+          active: true,
+          totalOrders: 0,
+          totalQuantity: 0,
+          lastOrder: new Date().toISOString().slice(0, 10),
+          isNew: true,
+        };
 
-      saveDealers([...existingDealers, finalDealer]);
-    } else {
-      finalDealer = {
-        ...selectedDealer,
-        isNew: false,
-      };
-    }
+        saveDealers([...existingDealers, finalDealer]);
+      } else {
+        finalDealer = {
+          ...selectedDealer,
+          isNew: false,
+        };
+      }
 
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-      throw new Error("Your login session has expired. Please sign in again.");
-    }
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("Your login session has expired. Please sign in again.");
+      }
 
-    const normalizedProducts = products.map((product) => {
-      const productData = catalogProducts.find(
-        (p) => String(p.id) === String(product.productId),
-      );
-      return {
-        productId: product.productId,
-        productName: productData?.name || "",
-        shades: product.shades.map((shade) => ({
-          shade: shade.shade === "other" ? shade.customShade : shade.shade,
-          packs: shade.packs.map((pack) => ({
-            packSize: pack.packSize,
-            quantity: Number(pack.quantity),
+      const normalizedProducts = products.map((product) => {
+        const productData = catalogProducts.find(
+          (p) => String(p.id) === String(product.productId),
+        );
+        return {
+          productId: product.productId,
+          productName: productData?.name || "",
+          shades: product.shades.map((shade) => ({
+            shade: shade.shade === "other" ? shade.customShade : shade.shade,
+            packs: shade.packs.map((pack) => ({
+              packSize: pack.packSize,
+              quantity: Number(pack.quantity),
+            })),
           })),
-        })),
+        };
+      });
+
+      const orderPayload = {
+        orderId: generatedOrderId,
+        dealer: finalDealer,
+        dealerUid: isDealer ? currentUser.uid : (finalDealer?.uid || finalDealer?.userUid || null),
+        dealerId: finalDealer?.id ?? null,
+        dealerName: finalDealer?.name || "",
+        salespersonUid: isDealer ? (finalDealer?.salespersonUid || finalDealer?.salespersonUID || null) : currentUser.uid,
+        salespersonId: isDealer ? (finalDealer?.salespersonId ?? null) : Number(salespersonId),
+        salespersonName: isDealer ? (finalDealer?.salespersonName || "") : (storedUser?.name || "Salesperson"),
+        createdBy: storedUser?.name || (isDealer ? finalDealer?.name : "Salesperson") || "User",
+        createdByRole: role.toUpperCase(),
+        createdByUserId: currentUser.uid,
+        products: normalizedProducts,
+        items: normalizedProducts.flatMap((product) => product.shades.flatMap((shade) => shade.packs.map((pack) => ({
+          product: product.productName,
+          shade: shade.shade,
+          packSize: pack.packSize,
+          quantity: Number(pack.quantity),
+        })))),
+        delivery: {
+          type: deliveryType,
+          transport: deliveryType === "transport" ? selectedTransport : null,
+        },
+        deliveryType: deliveryType === "transport" ? "TRANSPORT" : "DIRECT",
+        transport: deliveryType === "transport" ? selectedTransport : "",
+        remark,
+        status: "PENDING",
+        createdAt: new Date().toISOString(),
+        totalQuantity,
+        totalProductLines,
       };
-    });
 
-    const orderPayload = {
-      orderId: generatedOrderId,
-      dealer: finalDealer,
-      dealerUid: isDealer ? currentUser.uid : (finalDealer?.uid || finalDealer?.userUid || null),
-      dealerId: finalDealer?.id ?? null,
-      dealerName: finalDealer?.name || "",
-      salespersonUid: isDealer ? (finalDealer?.salespersonUid || finalDealer?.salespersonUID || null) : currentUser.uid,
-      salespersonId: isDealer ? (finalDealer?.salespersonId ?? null) : Number(salespersonId),
-      salespersonName: isDealer ? (finalDealer?.salespersonName || "") : (storedUser?.name || "Salesperson"),
-      createdBy: storedUser?.name || (isDealer ? finalDealer?.name : "Salesperson") || "User",
-      createdByRole: role.toUpperCase(),
-      createdByUserId: currentUser.uid,
-      products: normalizedProducts,
-      items: normalizedProducts.flatMap((product) => product.shades.flatMap((shade) => shade.packs.map((pack) => ({
-        product: product.productName,
-        shade: shade.shade,
-        packSize: pack.packSize,
-        quantity: Number(pack.quantity),
-      })))),
-      delivery: {
-        type: deliveryType,
-        transport: deliveryType === "transport" ? selectedTransport : null,
-      },
-      deliveryType: deliveryType === "transport" ? "TRANSPORT" : "DIRECT",
-      transport: deliveryType === "transport" ? selectedTransport : "",
-      remark,
-      status: "PENDING",
-      createdAt: new Date().toISOString(),
-      totalQuantity,
-      totalProductLines,
-    };
-
-    // Firestore security rules require the authenticated user to be linked to the order.
-    if (!orderPayload.dealerUid && !orderPayload.salespersonUid) {
-      throw new Error("The order must be linked to the signed-in dealer or salesperson.");
-    }
-    const firestoreId = await createRecord("orders", orderPayload);
-    const localOrder = { ...orderPayload, id: generatedOrderId, firestoreId };
-    const existingOrders = JSON.parse(localStorage.getItem("pareekx_orders") || "[]");
-    localStorage.setItem("pareekx_orders", JSON.stringify([localOrder, ...existingOrders]));
-    window.dispatchEvent(new Event("pareekx-orders-updated"));
-    setOrderId(generatedOrderId);
-    setShowSuccess(true);
+      // Firestore security rules require the authenticated user to be linked to the order.
+      if (!orderPayload.dealerUid && !orderPayload.salespersonUid) {
+        throw new Error("The order must be linked to the signed-in dealer or salesperson.");
+      }
+      const firestoreId = await createRecord("orders", orderPayload);
+      const localOrder = { ...orderPayload, id: generatedOrderId, firestoreId };
+      const existingOrders = JSON.parse(localStorage.getItem("pareekx_orders") || "[]");
+      localStorage.setItem("pareekx_orders", JSON.stringify([localOrder, ...existingOrders]));
+      window.dispatchEvent(new Event("pareekx-orders-updated"));
+      setOrderId(generatedOrderId);
+      setShowSuccess(true);
     } catch (error) {
       console.error("Failed to create order in Firestore:", error);
       setSubmitError(error?.code === "permission-denied"
@@ -864,6 +866,12 @@ export default function NewOrder({ role = "salesperson" }) {
 
           ================================================= */}{" "}
           <div className="space-y-6">
+
+
+
+
+
+            {/*  */}
             {/* Dealer / Account Details */}
             {isDealer && (
               <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -925,8 +933,9 @@ export default function NewOrder({ role = "salesperson" }) {
                     type="button"
                     onClick={() => {
                       setShowNewDealer((prev) => !prev);
-
                       setSelectedDealerId("");
+                      setDealerSearch("");
+                      setDealerDropdownOpen(false);
                     }}
                     className="inline-flex items-center gap-2 rounded-xl border border-[#B5220E] px-4 py-2 text-sm font-semibold text-[#B5220E] transition hover:bg-[#B5220E] hover:text-white"
                   >
@@ -947,35 +956,73 @@ export default function NewOrder({ role = "salesperson" }) {
                 {!showNewDealer ? (
                   <>
                     {" "}
-                    <div className="relative mb-3">
-                      {" "}
-                      <input
-                        type="text"
-                        value={dealerSearch}
-                        onChange={(e) => setDealerSearch(e.target.value)}
-                        placeholder="Search dealer by name, phone or city..."
-                        className={inputClass}
-                      />{" "}
-                    </div>{" "}
                     <div className="relative">
-                      {" "}
-                      <select
-                        value={selectedDealerId}
-                        onChange={(e) => handleDealerSelect(e.target.value)}
-                        className={`${inputClass} appearance-none pr-10`}
-                      >
-                        {" "}
-                        <option value="">Select Existing Dealer </option>{" "}
-                        {filteredDealers.map((dealer) => (
-                          <option key={dealer.id} value={dealer.id}>
-                            {dealer.name} — {dealer.city}{" "}
-                          </option>
-                        ))}{" "}
-                      </select>{" "}
-                      <ChevronDown
-                        size={18}
-                        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-                      />{" "}
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={
+                            dealerDropdownOpen
+                              ? dealerSearch
+                              : dealerSearch ||
+                              (selectedDealer
+                                ? `${selectedDealer.name} — ${selectedDealer.city}`
+                                : "")
+                          }
+                          onFocus={() => {
+                            setDealerDropdownOpen(true);
+                            setDealerSearch("");
+                          }}
+                          onClick={() => setDealerDropdownOpen(true)}
+                          onChange={(e) => {
+                            setDealerSearch(e.target.value);
+                            setDealerDropdownOpen(true);
+                            setSelectedDealerId("");
+                          }}
+                          placeholder="Select Existing Dealer"
+                          role="combobox"
+                          aria-expanded={dealerDropdownOpen}
+                          aria-controls="existing-dealer-options"
+                          autoComplete="off"
+                          className={`${inputClass} pr-10`}
+                        />
+                        <ChevronDown
+                          size={18}
+                          className={`pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition-transform ${dealerDropdownOpen ? "rotate-180" : ""
+                            }`}
+                        />
+                      </div>
+                      {dealerDropdownOpen && (
+                        <div
+                          id="existing-dealer-options"
+                          role="listbox"
+                          className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
+                        >
+                          {filteredDealers.length > 0 ? (
+                            filteredDealers.map((dealer) => (
+                              <button
+                                key={dealer.id}
+                                type="button"
+                                role="option"
+                                aria-selected={String(dealer.id) === String(selectedDealerId)}
+                                onClick={() => handleDealerSelect(String(dealer.id))}
+                                className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition hover:bg-slate-50 ${String(dealer.id) === String(selectedDealerId)
+                                  ? "bg-[#B5220E]/5 text-[#B5220E]"
+                                  : "text-slate-800"
+                                  }`}
+                              >
+                                <span className="block font-medium">{dealer.name}</span>
+                                <span className="mt-0.5 block text-xs text-slate-500">
+                                  {dealer.phone} · {dealer.city}
+                                </span>
+                              </button>
+                            ))
+                          ) : (
+                            <p className="px-3 py-3 text-sm text-slate-500">
+                              No dealers found. Try another name, phone or city.
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>{" "}
                     {selectedDealer && (
                       <div className="mt-5 grid grid-cols-1 gap-4 rounded-2xl bg-slate-50 p-4 md:grid-cols-2">
@@ -1473,11 +1520,10 @@ export default function NewOrder({ role = "salesperson" }) {
 
                     setSelectedTransport("");
                   }}
-                  className={`rounded-2xl border p-5 text-left transition ${
-                    deliveryType === "direct"
-                      ? "border-[#B5220E] bg-[#B5220E]/5"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
+                  className={`rounded-2xl border p-5 text-left transition ${deliveryType === "direct"
+                    ? "border-[#B5220E] bg-[#B5220E]/5"
+                    : "border-slate-200 hover:border-slate-300"
+                    }`}
                 >
                   {" "}
                   <div className="flex items-center gap-3">
@@ -1499,11 +1545,10 @@ export default function NewOrder({ role = "salesperson" }) {
                 <button
                   type="button"
                   onClick={() => setDeliveryType("transport")}
-                  className={`rounded-2xl border p-5 text-left transition ${
-                    deliveryType === "transport"
-                      ? "border-[#B5220E] bg-[#B5220E]/5"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
+                  className={`rounded-2xl border p-5 text-left transition ${deliveryType === "transport"
+                    ? "border-[#B5220E] bg-[#B5220E]/5"
+                    : "border-slate-200 hover:border-slate-300"
+                    }`}
                 >
                   {" "}
                   <div className="flex items-center gap-3">
@@ -1719,7 +1764,7 @@ export default function NewOrder({ role = "salesperson" }) {
                 </div>
                 {/* Submit */}{" "}
                 {submitError && <p role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{submitError}</p>}
-                  <button
+                <button
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
