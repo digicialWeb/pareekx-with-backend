@@ -424,7 +424,7 @@ export default function NewOrder() {
 
                   {dealerDropdownOpen && (
                     <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
-                      {/* <div className="border-b border-slate-100 p-3">
+                      <div className="border-b border-slate-100 p-3">
                         <input
                           type="text"
                           value={dealerSearch}
@@ -433,7 +433,7 @@ export default function NewOrder() {
                           autoFocus
                           className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-[#B5220E] focus:ring-2 focus:ring-[#B5220E]/10"
                         />
-                      </div> */}
+                      </div> 
                       <div className="max-h-60 overflow-y-auto p-1">
                         {filteredDealers.length > 0 ? (
                           filteredDealers.map((dealer) => (
