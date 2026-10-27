@@ -1349,9 +1349,9 @@ export default function NewOrder({ role = "salesperson" }) {
                                       {shadeName}{" "}
                                     </option>
                                   ))}{" "}
-                                  <option value="other">
-                                    Other / New Shade{" "}
-                                  </option>{" "}
+                                  {productData.shades.length > 1 && (
+                                    <option value="other">Other / New Shade</option>
+                                  )}{" "}
                                 </select>{" "}
                               </div>{" "}
                               {/* Custom shade */}{" "}
@@ -1408,7 +1408,7 @@ export default function NewOrder({ role = "salesperson" }) {
                                   {shade.packs.map((pack) => (
                                     <div
                                       key={pack.id}
-                                      className="grid grid-cols-[1fr_120px_40px] gap-2"
+                                      className="grid grid-cols-[minmax(0,1fr)_40px] gap-2 sm:grid-cols-[minmax(0,1fr)_120px_40px]"
                                     >
                                       {" "}
                                       <select
@@ -1426,7 +1426,7 @@ export default function NewOrder({ role = "salesperson" }) {
                                             e.target.value,
                                           )
                                         }
-                                        className={inputClass}
+                                        className={`${inputClass} col-span-2 min-w-0 sm:col-span-1`}
                                       >
                                         {" "}
                                         <option value="">
@@ -1822,5 +1822,3 @@ function InfoItem({ icon, label, value }) {
     </div>
   );
 }
-
-
