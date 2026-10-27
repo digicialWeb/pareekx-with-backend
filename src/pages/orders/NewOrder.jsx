@@ -350,7 +350,7 @@ export default function NewOrder({ role = "salesperson" }) {
                 shades: [
                   {
                     ...createShade(),
-                    // Automatically select the shade when this product has exactly one.
+                    // Auto-select shade and pack size when only one option exists.
                     shade: (() => {
                       const selectedProduct = catalogProducts.find(
                         (item) => String(item.id) === String(value),
@@ -359,6 +359,18 @@ export default function NewOrder({ role = "salesperson" }) {
                         ? selectedProduct.shades[0]
                         : "";
                     })(),
+                    packs: [
+                      createPack(
+                        (() => {
+                          const selectedProduct = catalogProducts.find(
+                            (item) => String(item.id) === String(value),
+                          );
+                          return selectedProduct?.packSizes?.length === 1
+                            ? selectedProduct.packSizes[0]
+                            : "";
+                        })(),
+                      ),
+                    ],
                   },
                 ],
               }
@@ -374,13 +386,24 @@ export default function NewOrder({ role = "salesperson" }) {
   ========================================================= */
 
   const addShade = (productId) => {
+    const selectedProduct = catalogProducts.find(
+      (item) => String(item.id) === String(
+        products.find((product) => product.id === productId)?.productId,
+      ),
+    );
+    const defaultPackSize = selectedProduct?.packSizes?.length === 1
+      ? selectedProduct.packSizes[0]
+      : "";
+
     setProducts((prev) =>
       prev.map((product) =>
         product.id === productId
           ? {
             ...product,
-
-            shades: [...product.shades, createShade()],
+            shades: [
+              ...product.shades,
+              { ...createShade(), packs: [createPack(defaultPackSize)] },
+            ],
           }
           : product,
       ),
@@ -1387,21 +1410,16 @@ export default function NewOrder({ role = "salesperson" }) {
                                   <label className="text-sm font-medium text-slate-700">
                                     Pack Size & Quantity{" "}
                                   </label>{" "}
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      addPack(
-                                        product.id,
-
-                                        shade.id,
-                                      )
-                                    }
-                                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B5220E]"
-                                  >
-                                    {" "}
-                                    <Plus size={14} />
-                                    Add Pack Size{" "}
-                                  </button>{" "}
+                                  {productData.packSizes.length > 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => addPack(product.id, shade.id)}
+                                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B5220E]"
+                                    >
+                                      <Plus size={14} />
+                                      Add Pack Size
+                                    </button>
+                                  )}{" "}
                                 </div>{" "}
                                 <div className="space-y-2">
                                   {" "}
@@ -1411,33 +1429,32 @@ export default function NewOrder({ role = "salesperson" }) {
                                       className="grid grid-cols-[minmax(0,1fr)_40px] gap-2 sm:grid-cols-[minmax(0,1fr)_120px_40px]"
                                     >
                                       {" "}
-                                      <select
-                                        value={pack.packSize}
-                                        onChange={(e) =>
-                                          updatePack(
-                                            product.id,
-
-                                            shade.id,
-
-                                            pack.id,
-
-                                            "packSize",
-
-                                            e.target.value,
-                                          )
-                                        }
-                                        className={`${inputClass} col-span-2 min-w-0 sm:col-span-1`}
-                                      >
-                                        {" "}
-                                        <option value="">
-                                          Select Pack Size{" "}
-                                        </option>{" "}
-                                        {productData.packSizes.map((size) => (
-                                          <option key={size} value={size}>
-                                            {size}{" "}
-                                          </option>
-                                        ))}{" "}
-                                      </select>{" "}
+                                      {productData.packSizes.length === 1 ? (
+                                        <div className={`${inputClass} flex min-w-0 items-center sm:col-span-1`}>
+                                          {productData.packSizes[0]}
+                                        </div>
+                                      ) : (
+                                        <select
+                                          value={pack.packSize}
+                                          onChange={(e) =>
+                                            updatePack(
+                                              product.id,
+                                              shade.id,
+                                              pack.id,
+                                              "packSize",
+                                              e.target.value,
+                                            )
+                                          }
+                                          className={`${inputClass} col-span-2 min-w-0 sm:col-span-1`}
+                                        >
+                                          <option value="">Select Pack Size</option>
+                                          {productData.packSizes.map((size) => (
+                                            <option key={size} value={size}>
+                                              {size}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      )}{" "}
                                       <input
                                         type="number"
                                         min="1"
@@ -1458,22 +1475,18 @@ export default function NewOrder({ role = "salesperson" }) {
                                         placeholder="Qty"
                                         className={inputClass}
                                       />{" "}
-                                      <button
-                                        type="button"
-                                        disabled={shade.packs.length === 1}
-                                        onClick={() =>
-                                          removePack(
-                                            product.id,
-
-                                            shade.id,
-
-                                            pack.id,
-                                          )
-                                        }
-                                        className="flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition hover:border-red-200 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40"
-                                      >
-                                        <Trash2 size={16} />{" "}
-                                      </button>{" "}
+                                      {productData.packSizes.length > 1 ? (
+                                        <button
+                                          type="button"
+                                          disabled={shade.packs.length === 1}
+                                          onClick={() => removePack(product.id, shade.id, pack.id)}
+                                          className="flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition hover:border-red-200 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                          <Trash2 size={16} />
+                                        </button>
+                                      ) : (
+                                        <span aria-hidden="true" />
+                                      )}{" "}
                                     </div>
                                   ))}{" "}
                                 </div>{" "}
