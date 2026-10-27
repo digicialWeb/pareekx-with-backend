@@ -1304,7 +1304,7 @@ export default function NewOrder({ role = "salesperson" }) {
                           <option value="">Select Product </option>{" "}
                           {catalogProducts.map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.name} ({item.unit}){" "}
+                              {item.name}{" "}
                             </option>
                           ))}{" "}
                         </select>{" "}
