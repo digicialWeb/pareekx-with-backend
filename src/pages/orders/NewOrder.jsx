@@ -1480,16 +1480,16 @@ export default function NewOrder({ role = "salesperson" }) {
                               </div>{" "}
                             </div>
                           ))}{" "}
-                          {productData.shades.length > 1 && (
+{productData.shades.length > 1 && (
                             <button
                               type="button"
                               onClick={() => addShade(product.id)}
                               className="inline-flex items-center gap-2 rounded-xl border border-dashed border-[#B5220E]/40 px-4 py-2.5 text-sm font-semibold text-[#B5220E] transition hover:bg-[#B5220E]/5"
                             >
                               <Plus size={16} />
-                              Add Another Shade{" "}
+                              Add Another Shade
                             </button>
-                          )}{" "}
+                          )}
                         </div>
                       )}{" "}
                     </div>
@@ -1822,3 +1822,5 @@ function InfoItem({ icon, label, value }) {
     </div>
   );
 }
+
+
