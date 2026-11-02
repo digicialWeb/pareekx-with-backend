@@ -17,7 +17,7 @@ import {
 const EMPTY_FORM = {
   name: "",
   code: "",
-  category: "Interior",
+  category: "Water Based",
   unit: "Litre",
   active: true,
 };
@@ -565,7 +565,7 @@ export default function Products() {
                     onChange={(value) =>
                       setForm((current) => ({ ...current, category: value }))
                     }
-                    options={["Interior", "Exterior", "Primer", "Putty", "Other"]}
+                    options={["Water Based", "Oil Based", "Construction Chemicals", "Other"]}
                   />
 
                   <SelectField
