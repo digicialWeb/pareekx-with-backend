@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LayoutDashboard, LogOut, Menu, PlusCircle, ShoppingCart, UserCircle, X } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { logout as firebaseLogout } from "../utils/auth";
+import logo from "../assets/logo.png";
 
 const DealerLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,7 +28,7 @@ const DealerLayout = () => {
       <div className="flex min-h-screen">
         <aside className={`fixed left-0 top-0 z-50 flex h-screen w-72 max-w-[86vw] flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-[#26110d] text-white shadow-2xl transition-transform duration-300 lg:w-64 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-5 sm:px-6">
-            <div><h1 className="text-2xl font-black tracking-tight">PareekX</h1><p className="mt-1 text-xs text-slate-400">Dealer Panel</p></div>
+            <div><img src={logo} alt="Pareek Logo" className="h-10 w-auto object-contain" /><p className="mt-1 text-xs text-slate-400">Dealer Panel</p></div>
             <button type="button" onClick={() => setSidebarOpen(false)} className="rounded-xl p-2 text-slate-400 transition hover:bg-white/10 hover:text-white lg:hidden" aria-label="Close menu"><X size={20} /></button>
           </div>
 
