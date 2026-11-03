@@ -17,6 +17,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { logout as firebaseLogout } from "../utils/auth";
+import logo from "../assets/logo.png";
 
 const menuItems = [
   {
@@ -105,9 +106,7 @@ const AdminLayout = () => {
         {/* Logo */}
         <div className="flex h-20 items-center justify-between border-b border-slate-200 px-6">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-              Pareek
-            </h1>
+            <img src={logo} alt="Pareek Logo" className="h-10 w-auto object-contain" />
 
             <p className="mt-0.5 text-xs font-medium text-slate-500">
               Order Management
@@ -141,10 +140,9 @@ const AdminLayout = () => {
                     `
                     group flex items-center gap-3 rounded-xl px-3 py-2.5
                     text-sm font-medium transition-all
-                    ${
-                      isActive
-                        ? "bg-gradient-to-r from-[#B5220E] to-[#E4572E] text-white shadow-md shadow-red-950/15"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ${isActive
+                      ? "bg-gradient-to-r from-[#B5220E] to-[#E4572E] text-white shadow-md shadow-red-950/15"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }
                     `
                   }
@@ -211,9 +209,8 @@ const AdminLayout = () => {
 
               <ChevronDown
                 size={16}
-                className={`text-slate-400 transition ${
-                  profileOpen ? "rotate-180" : ""
-                }`}
+                className={`text-slate-400 transition ${profileOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
