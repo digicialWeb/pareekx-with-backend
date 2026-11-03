@@ -723,6 +723,7 @@ export default function Salespersons() {
                   value={form.state}
                   onChange={(value) => updateForm("state", value)}
                   options={[
+                    "West Bengal",
                     "Chhattisgarh",
                     "Madhya Pradesh",
                     "Maharashtra",
