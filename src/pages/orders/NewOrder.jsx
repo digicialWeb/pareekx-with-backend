@@ -1302,11 +1302,17 @@ export default function NewOrder({ role = "salesperson" }) {
                         >
                           {" "}
                           <option value="">Select Product </option>{" "}
-                          {catalogProducts.map((item) => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}{" "}
-                            </option>
-                          ))}{" "}
+                          {[...catalogProducts]
+                            .sort((a, b) =>
+                              a.name.localeCompare(b.name, undefined, {
+                                sensitivity: "base",
+                              })
+                            )
+                            .map((item) => (
+                              <option key={item.id} value={item.id}>
+                                {item.name}
+                              </option>
+                            ))}{" "}
                         </select>{" "}
                       </div>
                       {/* Shades */}{" "}
@@ -1365,16 +1371,30 @@ export default function NewOrder({ role = "salesperson" }) {
                                   className={inputClass}
                                 >
                                   {" "}
-                                  <option value="">Select Shade </option>{" "}
-                                  {productData.shades.map((shadeName) => (
-                                    <option key={shadeName} value={shadeName}>
-                                      {" "}
-                                      {shadeName}{" "}
-                                    </option>
-                                  ))}{" "}
+                                  <option value="">Select Shade</option>
                                   {productData.shades.length > 1 && (
-                                    <option value="other">Other / New Shade</option>
-                                  )}{" "}
+                                    <option
+                                      value="other"
+                                      style={{ fontWeight: "bold" }}
+                                    >
+                                      OTHER / NEW SHADE
+                                    </option>
+                                  )}
+                                  {[...productData.shades]
+                                    .filter(
+                                      (shadeName) =>
+                                        shadeName.toLowerCase() !== "other / new shade",
+                                    )
+                                    .sort((a, b) =>
+                                      a.localeCompare(b, undefined, {
+                                        sensitivity: "base",
+                                      })
+                                    )
+                                    .map((shadeName) => (
+                                      <option key={shadeName} value={shadeName}>
+                                        {shadeName}
+                                      </option>
+                                    ))}
                                 </select>{" "}
                               </div>{" "}
                               {/* Custom shade */}{" "}
@@ -1397,7 +1417,7 @@ export default function NewOrder({ role = "salesperson" }) {
                                         e.target.value,
                                       )
                                     }
-                                    placeholder="Enter new shade name"
+                                    placeholder="Enter new shade name & Code"
                                     className={inputClass}
                                   />{" "}
                                 </div>
@@ -1493,7 +1513,7 @@ export default function NewOrder({ role = "salesperson" }) {
                               </div>{" "}
                             </div>
                           ))}{" "}
-{productData.shades.length > 1 && (
+                          {productData.shades.length > 1 && (
                             <button
                               type="button"
                               onClick={() => addShade(product.id)}
