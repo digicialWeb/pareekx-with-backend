@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { logout as firebaseLogout } from "../utils/auth";
+import logo from "../assets/logo.png";
 
 const SalespersonLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -47,7 +48,7 @@ const SalespersonLayout = () => {
         >
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-5 sm:px-6">
             <div>
-              <h1 className="text-2xl font-black tracking-tight">PareekX</h1>
+              <img src={logo} alt="Pareek Logo" className="h-10 w-auto object-contain" />
               <p className="mt-1 text-xs text-slate-400">Salesperson Panel</p>
             </div>
             <button
