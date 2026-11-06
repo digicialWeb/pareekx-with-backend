@@ -90,38 +90,6 @@ const DEALERS = [
   },
 ];
 
-const TRANSPORTS = [
-  {
-    id: 1,
-
-    name: "Shree Balaji Transport",
-
-    phone: "9876500011",
-
-    route: "Raipur → Bilaspur",
-  },
-
-  {
-    id: 2,
-
-    name: "Mahadev Logistics",
-
-    phone: "9876500022",
-
-    route: "Raipur → Nagpur",
-  },
-
-  {
-    id: 3,
-
-    name: "Patel Transport",
-
-    phone: "9876500033",
-
-    route: "Raipur → Bhopal",
-  },
-];
-
 
 /* =========================================================
 
@@ -230,6 +198,12 @@ export default function NewOrder({ role = "salesperson" }) {
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
 
+  // Firebase transports
+  const [transportList, setTransportList] = useState([]);
+  const [transportLoading, setTransportLoading] = useState(true);
+  const [transportError, setTransportError] = useState("");
+  const [selectedTransport, setSelectedTransport] = useState("");
+
   useEffect(() => {
     return watchCollection(
       "products",
@@ -255,10 +229,47 @@ export default function NewOrder({ role = "salesperson" }) {
     );
   }, []);
 
+  // Live transport collection from Firestore
+  useEffect(() => {
+    return watchCollection(
+      "transports",
+      (items) => {
+        const activeTransports = items
+          .filter((item) => item.active !== false)
+          .map((item) => ({
+            ...item,
+            name: item.name || item.transportName || item.companyName || "",
+            phone: item.phone || item.contact || item.contactNumber || "",
+            route: item.route || item.routeName || item.destination || "",
+          }))
+          .filter((item) => item.name.trim());
+
+        setTransportList(activeTransports);
+        setTransportLoading(false);
+        setTransportError("");
+        setSelectedTransport((current) =>
+          current && !activeTransports.some((item) => String(item.id) === String(current))
+            ? ""
+            : current,
+        );
+      },
+      (error) => {
+        console.error("Transport Firebase Error:", {
+          code: error?.code,
+          message: error?.message,
+          error,
+        });
+        setTransportError(`${error?.code || "ERROR"}: ${error?.message || "Could not load transports"}`);
+        setTransportLoading(false);
+      },
+    );
+  }, []);
+
+  const selectedTransportData = transportList.find(
+    (transport) => String(transport.id) === String(selectedTransport),
+  );
 
   const [deliveryType, setDeliveryType] = useState("direct");
-
-  const [selectedTransport, setSelectedTransport] = useState("");
 
   const [remark, setRemark] = useState("");
 
@@ -655,10 +666,19 @@ export default function NewOrder({ role = "salesperson" }) {
       }
     }
 
-    if (deliveryType === "transport" && !selectedTransport) {
-      alert("Please select a transport.");
-
-      return false;
+    if (deliveryType === "transport") {
+      if (transportLoading) {
+        alert("Please wait while transports load.");
+        return false;
+      }
+      if (transportError || transportList.length === 0) {
+        alert("No active Firebase transports are available. Please contact the administrator.");
+        return false;
+      }
+      if (!selectedTransport || !selectedTransportData) {
+        alert("Please select a transport.");
+        return false;
+      }
     }
 
     return true;
@@ -1621,26 +1641,26 @@ export default function NewOrder({ role = "salesperson" }) {
                   >
                     {" "}
                     <option value="">Select Transport </option>{" "}
-                    {TRANSPORTS.map((transport) => (
+                    {transportList.map((transport) => (
                       <option key={transport.id} value={transport.id}>
-                        {transport.name} —{transport.route}{" "}
+                        {transport.name}{transport.route ? ` — ${transport.route}` : ""}
                       </option>
                     ))}{" "}
                   </select>{" "}
+                  {transportLoading && (
+                    <p className="mt-2 text-xs text-slate-500">Loading transports from Firebase…</p>
+                  )}
+                  {transportError && (
+                    <p role="alert" className="mt-2 text-xs text-red-600">{transportError}</p>
+                  )}
+                  {!transportLoading && !transportError && transportList.length === 0 && (
+                    <p className="mt-2 text-xs text-amber-700">No active transports found in Firebase.</p>
+                  )}
                   {selectedTransport && (
                     <div className="mt-3 rounded-xl bg-blue-50 p-3 text-sm text-blue-800">
                       {" "}
-                      {
-                        TRANSPORTS.find(
-                          (t) => String(t.id) === String(selectedTransport),
-                        )?.phone
-                      }{" "}
-                      ·{" "}
-                      {
-                        TRANSPORTS.find(
-                          (t) => String(t.id) === String(selectedTransport),
-                        )?.route
-                      }{" "}
+                      {selectedTransportData?.phone || "Contact not available"}
+                      {selectedTransportData?.route ? ` · ${selectedTransportData.route}` : ""}
                     </div>
                   )}{" "}
                 </div>
@@ -1797,9 +1817,7 @@ export default function NewOrder({ role = "salesperson" }) {
                     <p className="mt-1 text-xs text-slate-500">
                       {" "}
                       {
-                        TRANSPORTS.find(
-                          (t) => String(t.id) === String(selectedTransport),
-                        )?.name
+                        selectedTransportData?.name
                       }{" "}
                     </p>
                   )}{" "}
